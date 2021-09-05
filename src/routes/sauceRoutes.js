@@ -8,4 +8,10 @@ router
   .get(sauceController.getAllSauces)
   .post(sauceController.createSauce);
 
+router
+  .route('/:id')
+  .get(sauceController.getSauce)
+  .patch(sauceController.updateSauce)
+  .delete(sauceController.deleteSauce);
+
 module.exports = router;
