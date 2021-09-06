@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
+const AppError = require('../utils/appError');
 const asyncHandler = require('../utils/asyncHandler');
 
 //Sign Token Function
@@ -46,3 +47,47 @@ exports.signup = asyncHandler(async (req, res, next) => {
     });
   }
 });
+
+//User login
+exports.login = asyncHandler(async (req, res, next) => {
+  //check for username and password in req body
+  const { username, password } = req.body;
+
+  //If username or password not found, throw error message
+  if (!username || !password) {
+    return next(new AppError(400, 'Please provide a username and password!'));
+  }
+
+  //Fetch user
+  const user = await User.findOne({ username: username });
+
+  if (user) {
+    //Check if user submitted pass matches hashed pass in database
+    const passwordMatch = await bcrypt.compare(password, user.password);
+
+    //If passwords match and username subitted equals username of user found send token
+    if (passwordMatch && user.username === username) {
+      const token = signToken(user._id, user.username, user.role);
+
+      res.status(200).json({
+        status: 'success',
+        token,
+        message: 'login successful',
+      });
+    } else {
+      res.status(401).json({
+        status: 'fail',
+        message: 'email or password is incorrect',
+      });
+    }
+  } else {
+    res.status(400).json({
+      status: 'fail',
+      message: 'user not found',
+    });
+  }
+});
+
+exports.authenticateUser = async (req, res, next) => {
+  console.log(req.headers);
+};
