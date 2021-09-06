@@ -4,6 +4,7 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT || 3000;
 const sauceRouter = require('./routes/sauceRoutes');
+const userRouter = require('./routes/userRoutes');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/globalErrorHandler');
 
@@ -24,8 +25,10 @@ dbSetup();
 //= =====================================================
 // ROUTES
 //= =====================================================
-
+//Sauce routes
 app.use('/sauces', sauceRouter);
+//User routes
+app.use('/users', userRouter);
 
 //Unhandled Routes
 app.all('*', (req, res, next) => {
