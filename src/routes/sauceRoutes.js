@@ -12,7 +12,15 @@ router
 router
   .route('/:id')
   .get(sauceController.getSauce)
-  .patch(sauceController.updateSauce)
-  .delete(sauceController.deleteSauce);
+  .patch(
+    authController.authenticateUser,
+    authController.checkIfAdmin,
+    sauceController.updateSauce
+  )
+  .delete(
+    authController.authenticateUser,
+    authController.checkIfAdmin,
+    sauceController.deleteSauce
+  );
 
 module.exports = router;
