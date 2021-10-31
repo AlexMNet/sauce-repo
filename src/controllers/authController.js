@@ -1,53 +1,39 @@
-const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
 const User = require('../models/userModel');
 const AppError = require('../utils/appError');
 const asyncHandler = require('../utils/asyncHandler');
 
-//Sign Token Function
-const signToken = (id, username, role) =>
-  jwt.sign({ id, username, role }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRY,
-  });
-
 //Signup a user
 exports.signup = asyncHandler(async (req, res, next) => {
   //Check if user exists
   const user = await User.findOne({ username: req.body.username });
 
-  //If no user, register user
-  if (!user) {
-    //hash user pass, also at + to saltrounds to change string to a number
-    const hashedPass = await bcrypt.hash(
-      req.body.password,
-      +process.env.SALTROUNDS
-    );
+  //If there is a user return error
+  if (user) return next(new AppError(400, 'user alreayd exists'));
 
-    //create new user with hashed pass
-    const newUser = await User.create({
-      username: req.body.username,
-      email: req.body.email,
-      password: hashedPass,
-      role: req.body.role,
-    });
+  //create new user with hashed pass
+  const newUser = await User.create({
+    username: req.body.username,
+    email: req.body.email,
+    password: req.body.password,
+    role: req.body.role,
+  });
 
-    //Create Token
-    const token = signToken(newUser._id, newUser.username, newUser.role);
+  //Create Token
+  const token = newUser.signToken(newUser._id);
 
-    //Send Success and token resposne to user
-    res.status(200).json({
+  //Send Success and token resposne to user
+  res
+    .status(200)
+    .cookie('access_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+    })
+    .json({
       status: 'success',
       message: 'User registration successful!',
-      token,
     });
-  } else {
-    //if no user send a failed response
-    res.status(400).json({
-      status: 'fail',
-      message: 'user already exists',
-    });
-  }
 });
 
 //User login
@@ -63,31 +49,29 @@ exports.login = asyncHandler(async (req, res, next) => {
   //Fetch user
   const user = await User.findOne({ username: username });
 
-  if (user) {
-    //Check if user submitted pass matches hashed pass in database
-    const passwordMatch = await bcrypt.compare(password, user.password);
+  if (!user) return next(new AppError(400, 'user not found'));
 
-    //If passwords match and username subitted equals username of user found send token
-    if (passwordMatch && user.username === username) {
-      const token = signToken(user._id, user.username, user.role);
+  //Check if user submitted pass matches hashed pass in database
+  const passwordMatch = await user.passwordMatch(password);
 
-      res.status(200).json({
-        status: 'success',
-        token,
-        message: 'login successful',
-      });
-    } else {
-      res.status(401).json({
-        status: 'fail',
-        message: 'email or password is incorrect',
-      });
-    }
-  } else {
-    res.status(400).json({
-      status: 'fail',
-      message: 'user not found',
+  //If password does not match, return error
+  if (!passwordMatch)
+    return next(new AppError(400, 'Email or password is invalid'));
+
+  //Sign Token
+  const token = user.signToken(user._id);
+
+  //Second success response and cookie with token to user
+  res
+    .status(200)
+    .cookie('access_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+    })
+    .json({
+      status: 'success',
+      message: 'login successful',
     });
-  }
 });
 
 //Authenticate users
