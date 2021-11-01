@@ -1,26 +1,28 @@
 const express = require('express');
-const sauceController = require('../controllers/sauceController');
-const authController = require('../controllers/authController');
+const {
+  getSauce,
+  getAllSauces,
+  createSauce,
+  updateSauce,
+  deleteSauce,
+} = require('../controllers/sauceController');
+const {
+  authorization,
+  // eslint-disable-next-line no-unused-vars
+  checkIfAdmin,
+} = require('../controllers/authController');
 
 const router = express.Router();
 
 router
   .route('/')
-  .get(sauceController.getAllSauces)
-  .post(sauceController.createSauce);
+  .get(authorization, getAllSauces)
+  .post(authorization, createSauce);
 
 router
   .route('/:id')
-  .get(sauceController.getSauce)
-  .patch(
-    authController.authenticateUser,
-    authController.checkIfAdmin,
-    sauceController.updateSauce
-  )
-  .delete(
-    authController.authenticateUser,
-    authController.checkIfAdmin,
-    sauceController.deleteSauce
-  );
+  .get(authorization, getSauce)
+  .patch(authorization, updateSauce)
+  .delete(authorization, deleteSauce);
 
 module.exports = router;

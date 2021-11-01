@@ -3,6 +3,7 @@ const express = require('express');
 
 const app = express();
 const port = process.env.PORT || 3000;
+const cookieParser = require('cookie-parser');
 const sauceRouter = require('./routes/sauceRoutes');
 const userRouter = require('./routes/userRoutes');
 const AppError = require('./utils/appError');
@@ -11,6 +12,7 @@ const globalErrorHandler = require('./controllers/globalErrorHandler');
 //Middlware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 //Console whether app is running in development/production mode
 // eslint-disable-next-line no-console
 console.log(process.env.NODE_ENV);
