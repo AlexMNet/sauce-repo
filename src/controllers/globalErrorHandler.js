@@ -12,11 +12,15 @@ const handleDuplicateErr = (err) => {
   return new AppError(400, message);
 };
 
-// const handleValidationErrorDB = (err) => {
-//   const errors = Object.values(err.errors).map((el) => el.message);
-//   const message = `Invalid input data. ${errors.join('. ')}`;
-//   return new AppError(message, 400);
-// };
+const handleValidationErrorDB = (err) => {
+  //Take the message from each error that is thrown and save into an array
+  const errors = Object.values(err.errors).map((el) => el.message);
+
+  //join the elements of the array to create an error message
+  const message = `Invalid input data. ${errors.join('. ')}`;
+
+  return new AppError(400, message);
+};
 
 const sendDevErr = (err, res) => {
   res.status(err.statusCode).json({
@@ -56,6 +60,8 @@ module.exports = (err, req, res, next) => {
     if (err.code === 11000) err = handleDuplicateErr(err);
     //Mongoose CastError
     if (err.name === 'CastError') err = handleCastErr(err);
+
+    if (err.name === 'ValidationError') err = handleValidationErrorDB(err);
     sendProdErr(err, res);
   }
 };

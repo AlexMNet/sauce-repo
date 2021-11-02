@@ -16,6 +16,7 @@ exports.signup = asyncHandler(async (req, res, next) => {
     username: req.body.username,
     email: req.body.email,
     password: req.body.password,
+    passwordConfirm: req.body.passwordConfirm,
     role: req.body.role,
   });
 
@@ -74,7 +75,7 @@ exports.login = asyncHandler(async (req, res, next) => {
 });
 
 //Check if user is logged in
-exports.authorization = (req, res, next) => {
+exports.authorization = asyncHandler(async (req, res, next) => {
   //Check for jwt token in the cookie
   const token = req.cookies.access_token;
 
@@ -93,7 +94,7 @@ exports.authorization = (req, res, next) => {
   } catch (err) {
     return next(new AppError(403, 'access token is invalid. Please login'));
   }
-};
+});
 
 //Logout user
 exports.logout = (req, res, next) =>
@@ -108,6 +109,10 @@ exports.checkIfAdmin = async (req, res, next) => {
     return next(new AppError(401, 'You must be an admin to access this page!'));
   }
   next();
+};
+
+exports.updatePassword = (req, res, next) => {
+  res.send('We will be right back!');
 };
 
 //TODO: Forgot Password

@@ -20,6 +20,16 @@ const userSchema = new Schema({
     type: String,
     required: [true, 'Must Provide a password'],
   },
+  passwordConfirm: {
+    type: String,
+    required: [true, 'Please confirm your password'],
+    validate: {
+      validator: function (pass) {
+        return pass === this.password;
+      },
+      msg: 'Passwords are not matching!',
+    },
+  },
   role: {
     type: String,
     enum: ['admin', 'user'],
@@ -30,6 +40,7 @@ const userSchema = new Schema({
 userSchema.pre('save', async function (next) {
   const hashedPass = await bcrypt.hash(this.password, +process.env.SALTROUNDS);
   this.password = hashedPass;
+  this.passwordConfirm = undefined;
   next();
 });
 

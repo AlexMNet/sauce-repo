@@ -16,7 +16,7 @@ const router = express.Router();
 
 router
   .route('/')
-  .get(authorization, getAllSauces)
+  .get(authorization, checkIfAdmin, getAllSauces)
   .post(authorization, createSauce);
 
 router
