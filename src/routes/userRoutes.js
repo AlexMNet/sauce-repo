@@ -8,7 +8,11 @@ router
   .post('/signup', authController.signup)
   .post('/login', authController.login)
   .get('/logout', authController.authorization, authController.logout)
-  .patch('/updatePassword', authController.updatePassword);
+  .patch(
+    '/updatePassword',
+    authController.authorization,
+    authController.updatePassword
+  );
 
 router.route('/').get(userController.getAllUsers);
 
