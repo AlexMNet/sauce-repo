@@ -52,6 +52,20 @@ userSchema.methods.signToken = function (id, role) {
   return token;
 };
 
+//Send response to user
+userSchema.methods.sendResponse = function (res, statusCode, message, token) {
+  return res
+    .status(statusCode)
+    .cookie('access_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+    })
+    .json({
+      status: 'success',
+      message,
+    });
+};
+
 //Check if passwords match
 userSchema.methods.passwordMatch = async function (password) {
   return await bcrypt.compare(password, this.password);
