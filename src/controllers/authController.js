@@ -24,16 +24,7 @@ exports.signup = asyncHandler(async (req, res, next) => {
   const token = newUser.signToken(newUser._id, newUser.role);
 
   //Send Success and token resposne to user
-  res
-    .status(200)
-    .cookie('access_token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-    })
-    .json({
-      status: 'success',
-      message: 'User registration successful!',
-    });
+  newUser.sendResponse(res, 200, 'user registration successful', token);
 });
 
 //User login
@@ -62,16 +53,7 @@ exports.login = asyncHandler(async (req, res, next) => {
   const token = user.signToken(user._id, user.role);
 
   //Second success response and cookie with token to user
-  res
-    .status(200)
-    .cookie('access_token', token, {
-      httpOnly: true,
-      // secure: process.env.NODE_ENV === 'production',
-    })
-    .json({
-      status: 'success',
-      message: 'login successful',
-    });
+  user.sendResponse(res, 200, 'login successful', token);
 });
 
 //Check if user is logged in
