@@ -45,9 +45,14 @@ exports.login = asyncHandler(async (req, res, next) => {
   //Check if user submitted pass matches hashed pass in database
   const passwordMatch = await user.passwordMatch(password);
 
-  //If password does not match, return error
-  if (!passwordMatch)
-    return next(new AppError(400, 'Email or password is invalid'));
+  //If password does not match, return error and log out user (possibly not need to log out user)
+  if (!passwordMatch) {
+    return res.clearCookie('access_token').status(400).json({
+      status: 'fail',
+      message: 'email or password is invalid',
+    });
+    // next(new AppError(400, 'Email or password is invalid'));
+  }
 
   //Sign Token
   const token = user.signToken(user._id, user.role);
@@ -93,9 +98,32 @@ exports.checkIfAdmin = async (req, res, next) => {
   next();
 };
 
-exports.updatePassword = (req, res, next) => {
-  res.send('We will be right back!');
-};
+exports.updatePassword = asyncHandler(async (req, res, next) => {
+  const { password, newPassword, newPasswordConfirm } = req.body;
+
+  //Find user from req.userId (user is already logged in)
+  const user = await User.findById(req.userId);
+
+  //Check if user submitted pass matches hashed pass in database
+  const passwordMatch = await user.passwordMatch(password);
+
+  //If password does not match, return error
+  if (!passwordMatch)
+    return next(new AppError(400, 'Email or password is invalid'));
+
+  //Reset password
+  user.password = newPassword;
+  user.passwordConfirm = newPasswordConfirm;
+
+  await user.save();
+
+  //Create token
+  const token = user.signToken(user._id, user.role);
+
+  //Send resposne
+  user.sendResponse(res, 200, 'new password saved!', token);
+});
 
 //TODO: Forgot Password
 //TODO: Reset Password
+//Test

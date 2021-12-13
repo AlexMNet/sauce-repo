@@ -58,7 +58,8 @@ userSchema.methods.sendResponse = function (res, statusCode, message, token) {
     .status(statusCode)
     .cookie('access_token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      //If true, cookie only works with https and not http. Disable for development
+      // secure: process.env.NODE_ENV === 'production',
     })
     .json({
       status: 'success',
