@@ -126,3 +126,4 @@ exports.updatePassword = asyncHandler(async (req, res, next) => {
 
 //TODO: Forgot Password
 //TODO: Reset Password
+//Test
