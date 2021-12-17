@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 
 const { Schema } = mongoose;
 
@@ -30,6 +31,8 @@ const userSchema = new Schema({
       msg: 'Passwords are not matching!',
     },
   },
+  passwordResetToken: String,
+  passwordResetExpires: Date,
   role: {
     type: String,
     enum: ['admin', 'user'],
@@ -70,6 +73,24 @@ userSchema.methods.sendResponse = function (res, statusCode, message, token) {
 //Check if passwords match
 userSchema.methods.passwordMatch = async function (password) {
   return await bcrypt.compare(password, this.password);
+};
+
+//Generate Reset Token
+userSchema.methods.createPasswordResetToken = function () {
+  //create reset token
+  const resetToken = crypto.randomBytes(32).toString('hex');
+
+  //Hash and save the token into the database
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+
+  //set expiry time
+  this.passwordResetToken = Date.now() + 10 * 60 * 10000;
+
+  //return token
+  return resetToken;
 };
 
 module.exports = mongoose.model('User', userSchema);

@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 const AppError = require('../utils/appError');
 const asyncHandler = require('../utils/asyncHandler');
+const sendEmail = require('../utils/email');
 
 //Signup a user
 exports.signup = asyncHandler(async (req, res, next) => {
@@ -124,6 +125,43 @@ exports.updatePassword = asyncHandler(async (req, res, next) => {
   user.sendResponse(res, 200, 'new password saved!', token);
 });
 
-//TODO: Forgot Password
+//Forgot password
+exports.forgotPassword = asyncHandler(async (req, res, next) => {
+  const { email } = req.body;
+  //Get user based on email
+  const user = await User.findOne({ email });
+
+  if (!user) return next(new AppError(404, 'There is no user with that email'));
+
+  //generate reset token, save hased version in DB and save changes
+  const resetToken = user.createPasswordResetToken();
+
+  //create link with reset token and a message
+  const resetURL = `${req.protocol}://${req.get(
+    'host'
+  )}/user/resetPassword/${resetToken}`;
+
+  const message = `Forgot your password? Submit a patch request to ${resetURL} with your new password. \n If this wasn't you, please change your password!`;
+  //send email
+  try {
+    await sendEmail({
+      email: user.email,
+      subject: 'Your password reset token is valid for 10 minutes',
+      message,
+    });
+  } catch (err) {
+    return next(
+      new AppError(
+        500,
+        'Something went wrong. Email was not send. Please contact website admin.'
+      )
+    );
+  }
+  //send response
+  user.sendResponse(res, 200, 'Token sent to email!');
+});
+
 //TODO: Reset Password
-//Test
+exports.resetPassword = asyncHandler(async (req, res, next) => {
+  res.send('Hello from reset password!');
+});
