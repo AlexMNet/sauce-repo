@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const User = require('../models/userModel');
 const AppError = require('../utils/appError');
 const asyncHandler = require('../utils/asyncHandler');
@@ -136,6 +137,9 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
   //generate reset token, save hased version in DB and save changes
   const resetToken = user.createPasswordResetToken();
 
+  //The function above creates changes to the user. Dont forget to save!
+  await user.save({ validateBeforeSave: false });
+
   //create link with reset token and a message
   const resetURL = `${req.protocol}://${req.get(
     'host'
@@ -163,5 +167,28 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
 
 //TODO: Reset Password
 exports.resetPassword = asyncHandler(async (req, res, next) => {
-  res.send('Hello from reset password!');
+  const { token } = req.params;
+  const { password, passwordConfirm } = req.body;
+
+  //hash token in req.params
+  const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+  //find user that has hashed token if not send error
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: Date.now() },
+  });
+
+  if (!user) return next(new AppError(404, 'Token invalid or expired'));
+
+  //set new user password and set passwordResetToken and passwordResetExpires to undefined
+  user.password = password;
+  user.passwordConfirm = passwordConfirm;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+
+  await user.save();
+
+  //send response and token
+  user.sendResponse(res, 200, 'password reset!', token);
 });
