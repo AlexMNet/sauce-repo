@@ -2,7 +2,6 @@ require('dotenv').config();
 const express = require('express');
 
 const app = express();
-const port = process.env.PORT || 3000;
 const cookieParser = require('cookie-parser');
 const sauceRouter = require('./routes/sauceRoutes');
 const userRouter = require('./routes/userRoutes');
@@ -39,7 +38,4 @@ app.all('*', (req, res, next) => {
 
 app.use(globalErrorHandler);
 
-app.listen(port, () => {
-  // eslint-disable-next-line no-console
-  console.log(`App listening on port: ${port}`);
-});
+module.exports = app;
