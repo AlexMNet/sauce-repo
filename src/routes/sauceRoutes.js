@@ -14,10 +14,7 @@ const {
 
 const router = express.Router();
 
-router
-  .route('/')
-  .get(authorization, getAllSauces)
-  .post(authorization, createSauce);
+router.route('/').get(getAllSauces).post(authorization, createSauce);
 
 router
   .route('/:id')
