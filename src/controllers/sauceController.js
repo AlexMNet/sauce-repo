@@ -1,14 +1,18 @@
 const Sauce = require('../models/sauceModel');
 const AppError = require('../utils/appError');
 const asyncHandler = require('../utils/asyncHandler');
+const APIQueryOptions = require('../utils/APIQueryOptions');
 
 //Get all sauces
 exports.getAllSauces = asyncHandler(async (req, res, next) => {
-  const search = req.query.search
-    ? { name: new RegExp(req.query.search, 'i') }
-    : {};
+  // console.log(req.query);
+  const queryOptions = new APIQueryOptions(Sauce.find(), req.query)
+    .filter()
+    .sort()
+    .projection()
+    .pagination();
 
-  const sauces = await Sauce.find(search);
+  const sauces = await queryOptions.query;
 
   res.status(200).json({
     status: 'Successful',
@@ -21,14 +25,12 @@ exports.getAllSauces = asyncHandler(async (req, res, next) => {
 
 //Create a sauce
 exports.createSauce = asyncHandler(async (req, res, next) => {
-  const sauce = await Sauce.create({
-    name: req.body.name,
-  });
+  const newSauce = await Sauce.create(req.body);
 
   res.status(200).json({
     status: 'Successful',
     data: {
-      sauce,
+      newSauce,
     },
   });
 });
@@ -36,6 +38,8 @@ exports.createSauce = asyncHandler(async (req, res, next) => {
 //Fetch a single sauce
 exports.getSauce = asyncHandler(async (req, res, next) => {
   const sauce = await Sauce.findById(req.params.id);
+
+  if (!sauce) return next(new AppError(404, 'No Sauce found with that ID!'));
 
   res.status(200).json({
     status: 'Successful',
