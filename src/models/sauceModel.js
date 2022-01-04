@@ -19,6 +19,11 @@ const sauceSchema = new Schema(
       type: Number,
       required: [true, 'Sauce must have a rating between 1 and 5'],
     },
+    user: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'User',
+      required: [true, 'Review must belong to a user'],
+    },
   },
   { timestamps: true }
 );

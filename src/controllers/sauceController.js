@@ -12,7 +12,10 @@ exports.getAllSauces = asyncHandler(async (req, res, next) => {
     .projection()
     .pagination();
 
-  const sauces = await queryOptions.query;
+  const sauces = await queryOptions.query.populate({
+    path: 'user',
+    select: 'username',
+  });
 
   res.status(200).json({
     status: 'Successful',
@@ -25,7 +28,7 @@ exports.getAllSauces = asyncHandler(async (req, res, next) => {
 
 //Create a sauce
 exports.createSauce = asyncHandler(async (req, res, next) => {
-  const newSauce = await Sauce.create(req.body);
+  const newSauce = await Sauce.create({ ...req.body, user: req.userId });
 
   res.status(200).json({
     status: 'Successful',
@@ -59,6 +62,8 @@ exports.updateSauce = asyncHandler(async (req, res, next) => {
   if (!sauce) {
     return next(new AppError(404, 'Sauce cannot be found'));
   }
+  if (req.userId !== sauce.user._id.toString())
+    return next(new AppError(404, 'You cannot update another users sauces'));
 
   res.status(200).json({
     status: 'Successful',
