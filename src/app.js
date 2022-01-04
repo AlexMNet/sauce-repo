@@ -1,14 +1,20 @@
 require('dotenv').config();
+
+const path = require('path');
 const express = require('express');
 
 const app = express();
 const cookieParser = require('cookie-parser');
 const sauceRouter = require('./routes/sauceRoutes');
 const userRouter = require('./routes/userRoutes');
+const viewRouter = require('./routes/viewsRoutes');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/globalErrorHandler');
 
 //Middlware
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -26,10 +32,12 @@ dbSetup();
 //= =====================================================
 // ROUTES
 //= =====================================================
+//View Routes
+app.use('/', viewRouter);
 //Sauce routes
-app.use('/sauces', sauceRouter);
+app.use('/api/sauces', sauceRouter);
 //User routes
-app.use('/users', userRouter);
+app.use('/api/users', userRouter);
 
 //Unhandled Routes
 app.all('*', (req, res, next) => {

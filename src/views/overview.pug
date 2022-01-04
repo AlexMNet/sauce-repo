@@ -1,0 +1,20 @@
+extends base
+
+block content 
+  .container 
+    h1.display-2.text-center Most Popular Hot Sauces
+    p.text-center.text-muted There are x amount of hot sauces in the database
+    hr
+    .row  
+      each sauce in sauces
+        .col.mb-3 
+          .card.mx-auto(style="width: 18rem")
+            img.card-img-top.img-fluid(src='https://cdn.shopify.com/s/files/1/2974/9368/products/HG0206359_1800x1800.jpg?v=1612541423' alt='Hot Sauce' style="max-height: 200px; width: auto; object-fit: contain")
+            .card-body.text-center
+              a(href="#")
+                h5.card-title.text-center= sauce.name
+              p= `Rating: ${sauce.rating}`
+              p= `Submited by: ${sauce.user.username}`
+
+
+//- TODO sauce.user.username is comming up undefined!
