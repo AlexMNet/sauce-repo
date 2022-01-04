@@ -15,6 +15,12 @@ block content
                 h5.card-title.text-center= sauce.name
               p= `Rating: ${sauce.rating}`
               p= `Submited by: ${sauce.user.username}`
-
+              .d-grid.gap-2.d-md-block
+                a.btn.btn-outline-info.btn-sm.me-md-2.me-0(href="#")
+                  i.far.fa-edit
+                a.btn.btn-outline-info.btn-sm.me-md-2.me-0(href="#") Empty?
+                form.d-grid.d-lg-inline(action="#")
+                  button.btn.btn-outline-danger.btn-sm 
+                    i.far.fa-trash-alt
 
 //- TODO sauce.user.username is comming up undefined!
