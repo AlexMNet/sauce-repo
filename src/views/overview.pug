@@ -13,7 +13,11 @@ block content
             .card-body.text-center
               a(href="#")
                 h5.card-title.text-center= sauce.name
-              p= `Rating: ${sauce.rating}`
+              each star in [1, 2, 3, 4, 5]
+                if star <= sauce.rating
+                  i.fas.fa-star.fa-lg(style='color: gold;') 
+                else 
+                  i.far.fa-star.fa-lg(style='color: grey;')
               p= `Submited by: ${sauce.user.username}`
               .d-grid.gap-2.d-md-block
                 a.btn.btn-outline-info.btn-sm.me-md-2.me-0(href="#")
@@ -24,3 +28,4 @@ block content
                     i.far.fa-trash-alt
 
 //- TODO sauce.user.username is comming up undefined!
+

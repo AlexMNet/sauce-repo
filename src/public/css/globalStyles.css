@@ -1,0 +1,23 @@
+a {
+  text-decoration: none;
+  font-size: inherit;
+  color: inherit;
+}
+
+.card {
+  border: none;
+}
+
+.show-card {
+  background-color: whitesmoke;
+  border-radius: 10px;
+}
+
+.fa-star {
+  cursor: pointer;
+  transition: all 150ms;
+}
+
+.fa-star:hover {
+  transform: scale(1.2);
+}
