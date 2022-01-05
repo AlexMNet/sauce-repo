@@ -2,7 +2,7 @@ extends base
 
 block content 
   .container 
-    h1.display-2.text-center Most Popular Hot Sauces
+    h1.display-2.text-center= `${sauces[0].user.username.toUpperCase()}'s Hot Sauce Collection`
     p.text-center.text-muted There are x amount of hot sauces in the database
     hr
     .row  
