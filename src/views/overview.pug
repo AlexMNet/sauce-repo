@@ -2,8 +2,8 @@ extends base
 
 block content 
   .container 
-    h1.display-2.text-center= `${sauces[0].user.username.toUpperCase()}'s Hot Sauce Collection`
-    p.text-center.text-muted There are x amount of hot sauces in the database
+    h1.display-2.text-center= `${capitalize(sauces[0].user.username)}'s Hot Sauce Collection`
+    p.text-center.text-muted= sauces.length > 1 ? `There are ${sauces.length} hot sauces in your collection!` : `There is 1 hot sauce in your collection!`
     hr
     .row  
       each sauce in sauces
