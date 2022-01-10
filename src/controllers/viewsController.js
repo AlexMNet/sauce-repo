@@ -19,3 +19,10 @@ exports.getLoginForm = asyncHandler(async (req, res, next) => {
     title: 'Login',
   });
 });
+
+exports.getNewSauceForm = asyncHandler(async (req, res, next) => {
+  res.status(200).render('newSauce', {
+    title: 'Create New Sauce',
+    capitalize,
+  });
+});

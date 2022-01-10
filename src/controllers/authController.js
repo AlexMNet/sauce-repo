@@ -97,7 +97,6 @@ exports.authorization = asyncHandler(async (req, res, next) => {
   //verify token
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log(decoded);
     //Add token information to req object
     req.userId = decoded.id;
     req.userRole = decoded.role;
