@@ -76,7 +76,7 @@ exports.isLoggedIn = async (req, res, next) => {
       if (!user) {
         return next();
       }
-      console.log(user);
+
       res.locals.user = user;
       return next();
     } catch (err) {
