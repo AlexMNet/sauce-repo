@@ -63,6 +63,29 @@ exports.login = asyncHandler(async (req, res, next) => {
   user.sendResponse(res, 200, 'login successful', token);
 });
 
+//Only to check if user is logged in
+exports.isLoggedIn = async (req, res, next) => {
+  if (req.cookies.access_token) {
+    try {
+      const decoded = jwt.verify(
+        req.cookies.access_token,
+        process.env.JWT_SECRET
+      );
+
+      const user = await User.findById(decoded.id);
+      if (!user) {
+        return next();
+      }
+      console.log(user);
+      res.locals.user = user;
+      return next();
+    } catch (err) {
+      return next();
+    }
+  }
+  return next();
+};
+
 //Check if user is logged in
 exports.authorization = asyncHandler(async (req, res, next) => {
   //Check for jwt token in the cookie
@@ -74,7 +97,7 @@ exports.authorization = asyncHandler(async (req, res, next) => {
   //verify token
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
+    console.log(decoded);
     //Add token information to req object
     req.userId = decoded.id;
     req.userRole = decoded.role;

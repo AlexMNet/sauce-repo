@@ -13,3 +13,9 @@ exports.getOverview = asyncHandler(async (req, res, next) => {
     capitalize,
   });
 });
+
+exports.getLoginForm = asyncHandler(async (req, res, next) => {
+  res.status(200).render('login', {
+    title: 'Login',
+  });
+});

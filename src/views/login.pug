@@ -1,0 +1,23 @@
+extends base 
+
+block content 
+  section.vh-100
+    .container.py-5.h-100 
+      .row.d-flex.justify-content-center.align-items-center.h-100 
+        .col-12.col-md-8.col-lg-6.col-xl-5 
+          form.card.shadow-2-strong.border(style="border-radius: 1rem;")
+            .card-body.p-5.text-center 
+              h3.mb-5 Sign in 
+              .form-outline.mb-4
+                input.form-control.form-control-lg(type="text" id="username" name="username")
+                label.form-label(for="username") Username 
+              .form-outline.mb-4
+                input.form-control.form-control-lg(type="password" id="password" name="password")
+                label.form-label(for="password") Password 
+              button.btn.btn-lg.btn-block.btn-primary(type="submit") Submit
+
+
+
+
+
+

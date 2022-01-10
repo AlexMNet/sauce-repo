@@ -11,19 +11,23 @@ nav.navbar.navbar-expand-lg.navbar-light.bg-light
     .collapse.navbar-collapse#navbarNav 
       ul.navbar-nav 
         li.nav-item 
-          a.nav-link.active(aria-current="page" href="#") Home 
+          a.nav-link.active(aria-current="page" href="/") Home 
         li.nav-item 
           a.nav-link.active(aria-current="page" href="#") New Sauce 
         li.nav-item 
           a.nav-link.active(aria-current="page" href="#") Empty Bottles 
-        li.nav-item 
-          a.nav-link.active(aria-current="page" href="#") Login 
-        li.nav-item 
-          a.nav-link.active(aria-current="page" href="#") Logout 
+        if !user
+          li.nav-item.d-lg-none
+            a.nav-link.active(aria-current="page" href="/login") Login 
+        else
+          li.nav-item.d-lg-none
+            a.nav-link.active(aria-current="page" href="#") Logout 
     .me-auto.d-none.d-lg-flex.align-items-center
-      img.rounded-circle(src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8YXZhdGFyfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=1400&q=60" style="width: 30px; height: 30px")
       ul.navbar-nav 
-        li.nav-item 
-          a.nav-link.active(aria-current="page" href="#") Login 
-        li.nav-item 
-          a.nav-link.active(aria-current="page" href="#") Logout 
+        if user
+          img.rounded-circle(src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8YXZhdGFyfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=1400&q=60" style="width: 30px; height: 30px")
+          li.nav-item 
+            a.nav-link.active(aria-current="page" href="#") Logout 
+        else 
+          li.nav-item 
+            a.nav-link.active(aria-current="page" href="/login") Login
